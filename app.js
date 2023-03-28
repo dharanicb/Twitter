@@ -132,15 +132,18 @@ app.get("/user/tweets/feed/", async (request, response) => {
   } = request;
   const getTweetsQuery = `
    SELECT
-    user.username AS username,
-    tweet.tweet AS tweet,
-    tweet.date_time AS dateTime
-   FROM
-    user INNER JOIN tweet ON user.user_id = tweet.user_id
-   ORDER BY
-    user.user_id DESC
-    LIMIT ${limit}
-    OFFSET ${offset};`;
+        user.username, tweet.tweet, tweet.date_time AS dateTime
+    FROM
+        follower
+     INNER JOIN tweet
+        ON follower.following_user_id = tweet.user_id
+     INNER JOIN user
+        ON tweet.user_id = user.user_id
+  WHERE
+        follower.follower_user_id = 1
+     ORDER BY
+    tweet.date_time DESC
+    LIMIT 4;`;
   const tweetArray = await db.all(getTweetsQuery);
   response.send(tweetArray);
 });
